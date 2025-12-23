@@ -16,8 +16,8 @@ type ListVodRequest struct {
 	StreamID    *string `json:"stream_id,omitempty" url:"stream_id,omitempty" jsonschema_description:"Filter VODs by parent live channel ID (stream ID). Only returns VODs that were created from recordings of the specified live channel."`
 	DurationMin *int    `json:"duration_min,omitempty" url:"duration_min,omitempty" jsonschema_description:"Filter VODs by minimum duration in seconds. Returns VODs with duration greater than or equal to this value. Example: 600 for videos longer than 10 minutes."`
 	DurationMax *int    `json:"duration_max,omitempty" url:"duration_max,omitempty" jsonschema_description:"Filter VODs by maximum duration in seconds. Returns VODs with duration less than or equal to this value."`
-	StartDate   *string `json:"start_date,omitempty" url:"start_date,omitempty" jsonschema_description:"Filter VODs by start date (YYYY-MM-DD format). Returns VODs created on or after this date."`
-	EndDate     *string `json:"end_date,omitempty" url:"end_date,omitempty" jsonschema_description:"Filter VODs by end date (YYYY-MM-DD format). Returns VODs created on or before this date."`
+	StartDate   *string `json:"start_date,omitempty" url:"start_date,omitempty" jsonschema_description:"Filter VODs created after this date. YYYY-MM-DD format."`
+	EndDate     *string `json:"end_date,omitempty" url:"end_date,omitempty" jsonschema_description:"Filter VODs created before this date. YYYY-MM-DD format."`
 }
 
 func (l ListVodRequest) Transform() toolscommon.Transformable { return l }
@@ -26,6 +26,7 @@ func RegisterListVod(srv *server.MCPServer, client *apiclient.ApiClient) {
 	tool := mcp.NewTool("list_vods_v1",
 		mcp.WithDescription("Returns a paginated list of all VODs. Can filter by stream_id, duration (duration_min/duration_max), or date range (start_date/end_date) to get VODs matching specific criteria. \n\nResponse schema: "+toolscommon.TypeToJsonSchema[toolscommon.PaginatedData[VodResponse]]()),
 		mcp.WithInputSchema[ListVodRequest](),
+		//mcp.WithOutputSchema[toolscommon.PaginatedData[VodResponse]](),
 	)
 
 	srv.AddTool(tool, toolscommon.DefaultDacastProxyHandler[ListVodRequest, toolscommon.PaginatedData[VodResponse]](
